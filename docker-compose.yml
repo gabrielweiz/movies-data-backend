@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb
+    volumes:
+       - ../mongodata:/data/db
+    ports:
+       - "27017:27017"
+    restart: always
