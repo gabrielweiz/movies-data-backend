@@ -24,26 +24,28 @@ Exemplos:
 http://192.168.15.74:7000/movies?director=Frank%20CapraORSteven%20Spielberg
 retorna os filmes de ambos diretores
 
-http://192.168.15.74:7000/movies?year=>2005
+http://192.168.15.74:7000/movies?year>=2005
 retorna os filmes a partir de 2005
 
-http://192.168.15.74:7000/movies?rotten_tomatoes_critics_rating=>99
+http://192.168.15.74:7000/movies?rotten_tomatoes_critics_rating>=99
 filmes com score 99 ou mais pelos criticos do rotten tomatoes
 
-http://192.168.15.74:7000/movies?rotten_tomatoes_critics_rating=>&rotten_tomatoes_audience_rating=>95&imdb_rating=>8.4
+http://192.168.15.74:7000/movies?rotten_tomatoes_critics_rating>=&rotten_tomatoes_audience_rating>=95&imdb_rating>=8.4
 filmes com score >= 99 rotten_tomatoes_critics_rating >= 95 rotten_tomatoes_audience_rating e >= 8.4 score no imdb
 
 """
 @app.route('/movies', methods=["GET"])
 def get_movies():
-    query = request.args.to_dict()
-    for k, v in query.items():
+    query = {}
+    for k, v in request.args.to_dict().items():
         if k == "stars" or k == "director" and "OR" in v:
             query[k] = {"$in": v.split("OR")}
-        if ">" in v or "<" in v:
-            query[k] = {"$gte" if ">" in v else "$lte": float(v[1:]) if k == "imdb_rating" else int(v[1:])}
+        elif ">" in k or "<" in k:
+            query[k[:-1]] = {"$gte" if ">" in k else "$lte": float(v) if k == "imdb_rating" else int(v)}
         elif "rating" in k or k == "year":
             query[k] = float(v) if k == "imdb_rating" else int(v)
+        else:
+            query[k] = v
 
     movies = list(db.find(query, {"_id": False}))
     return jsonify({"movies": movies, "count": len(movies)})
