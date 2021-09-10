@@ -18,8 +18,10 @@ class RTSpider(scrapy.Spider):
         content = json.loads(response.xpath('//script[@type="application/ld+json"]/text()').get())
         title = content['name']
         director = response.xpath('//div[contains(text(), "Director")]/following-sibling::div//a/text()').get()
-        rating = int(content['aggregateRating']['ratingValue'])
+        critics_rating = int(content['aggregateRating']['ratingValue'])
+        audience_rating = int(response.xpath("//score-board/@audiencescore").get())
         year = int(response.xpath('//div[contains(text(), "Release Date")]/following-sibling::div//text()').re_first("\d{4}"))
         stars = [a.strip() for a in response.xpath('//div[contains(@class, "castSection")]//a/span/text()').getall()]
 
-        yield Movie(title=title, director=director, rotten_tomatoes_rating=rating, year=year, stars=stars)
+        yield Movie(title=title, director=director, rotten_tomatoes_critics_rating=critics_rating,
+                    rotten_tomatoes_audience_rating=audience_rating, year=year, stars=stars)
