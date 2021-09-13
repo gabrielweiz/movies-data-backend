@@ -18,7 +18,7 @@ class ImdbSpider(scrapy.Spider):
         director = response.xpath('//span[contains(text(), "Director")]/following-sibling::div//a/text()').get()
         rating = float(response.xpath('//div[contains(text(), "IMDb RATING")]/following-sibling::a//span/text()').get())
         year = int(response.xpath('//a[contains(text(), "Release date")]/following-sibling::div//text()').re_first("\d{4}"))
-        stars = response.xpath('//a[contains(text(), "Stars")]/following-sibling::div//li//text()').getall()
+        stars = response.xpath('//a[contains(text(), "Stars")]/following-sibling::div//li//a/text()').getall()
 
         yield Movie(title=title, director=director, imdb_rating=rating, year=year, stars=stars)
 

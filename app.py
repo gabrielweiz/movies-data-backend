@@ -1,11 +1,14 @@
 import os
 import pymongo
 from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 
 client = pymongo.MongoClient(os.getenv('MONGO_URL', 'localhost'))
 db = client['movies-data']["movies"]
 
 app = Flask(__name__)
+CORS(app)
+
 
 
 @app.route('/', methods=["GET"])

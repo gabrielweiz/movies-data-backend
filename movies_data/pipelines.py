@@ -13,8 +13,10 @@ class MoviesPipeline:
         existing_obj = self.db.find_one({"title": item['title']})
         updates = {}
         if existing_obj:
-            if item.get("rotten_tomatoes_rating"):
-                updates["rotten_tomatoes_rating"] = item["rotten_tomatoes_rating"]
+            if item.get("rotten_tomatoes_critics_rating"):
+                updates["rotten_tomatoes_critics_rating"] = item["rotten_tomatoes_critics_rating"]
+            if item.get("rotten_tomatoes_audience_rating"):
+                updates["rotten_tomatoes_audience_rating"] = item["rotten_tomatoes_audience_rating"]
             if item.get("imdb_rating"):
                 updates["imdb_rating"] = item["imdb_rating"]
 
@@ -27,6 +29,7 @@ class MoviesPipeline:
         else:
             dict_item = dict(item)
             dict_item["id"] = uuid.uuid4().hex
+            dict_item["stars"] = list(set(item['stars']))
             self.db.insert_one(dict_item)
             print(f"inserted movie {item['title']}")
         return item
